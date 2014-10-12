@@ -1,7 +1,48 @@
 #!/usr/bin/perl -w
+use Services::Meta_Cache;
 
-use Cache::Cache_Singleton;
+use Data::Dumper;
 
-print("Hello");
+my $cache = Services::Meta_Cache->instance();
+my $base_key = "key_";
+my $map = {
+	'key' => undef,
+	'value' => "value hduisdcbdsunds",
+};
+my $duration = "20 minute";
+
+#save_cache($cache);
+read_cache($cache);
+
+sub save_cache {
+	my ($cache) = @_;
+	my $tmp_key;
+
+	for (my $var = 0; $var < 100; $var++) {
+		$tmp_key = $base_key . $var;
+		$map->{key} = tmp_key;
+
+		if ($cache->set($tmp_key, $map, $duration)) {
+			print("Saved key : $tmp_key\n");
+		}
+	}
+}
+
+sub read_cache {
+	my ($cache) = @_;
+	my $tmp_key;
+
+	for (my $var = 0; $var < 100; $var++) {
+		$tmp_key = $base_key . $var;
+
+		my $value_map = $cache->get($tmp_key);
+
+		if ($value_map) {
+			print("Readed key $tmp_key = " . Dumper($value_map) . "\n");
+		} else {
+			print("Value for key $tmp_key not found.....\n");
+		}
+	}
+}
 
 1;
