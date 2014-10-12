@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# memcached    Startup script for memcached processes
+#
+# chkconfig: - 90 10
+# description: Memcache provides fast memory based storage.
+# processname: memcached
+
+# These mappings correspond one-to-one with Drupal's settings.php file.
+
+#[ -f memcached ] || exit 0
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+DAEMON=/usr/local/bin/memcached
+DAEMON_BOOTSTRAP=/usr/local/bin/start-memcached
+DAEMON_CONF=/etc/memcached.conf
+NAME=memcached
+PIDFILE=/var/run/$NAME.pid
+
+[ -x $DAEMON ] || exit 0
+[ -x $DAEMON_BOOTSTRAP ] || exit 0
+
+RETVAL=0
+
+start() {
+    echo -n $"Starting $NAME: "
+    daemon $DAEMON_BOOTSTRAP $DAEMON_CONFIG
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch $PIDFILE
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Shutting down $NAME: "
+    killproc $NAME
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $PIDFILE
+    return $RETVAL
+}
+
+status() {
+    echo -n $"$NAME is "
+    [ -f $PIDFILE ] && echo "running" || echo "not running"
+    return
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status
+        ;;
+    restart|reload)
+        stop
+        start
+        ;;
+    status)
+        status $prog
+        RETVAL=$?
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
+exit $RETVAL
