@@ -12,7 +12,9 @@ my $map = {
 my $duration = "20 minute";
 
 #save_cache($cache);
-read_cache($cache);
+#read_cache($cache);
+
+print(Dumper($cache));
 
 sub save_cache {
 	my ($cache) = @_;

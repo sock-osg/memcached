@@ -44,7 +44,7 @@ sub get_config {
 	my ($self, $driver) = @_;
 
 	my %config;
-	my $file_path = '/Users/samuel-quintana/workspace-perl/test-memcached/config/' . lc($self->namespace) . '.pl';
+	my $file_path = $ENV{"HOME"} . '/workspace-perl/test-memcached/config/' . lc($self->namespace) . '.pl';
 	print("Cache config path : " . $file_path . " with driver " . $driver . "\n");
 
 	if (-e $file_path) {
@@ -91,39 +91,9 @@ sub Memcached {
 	$config->{Memcached}{driver} = 'Memcached::Fast';
 }
 
-sub DBI {
-	my ($self, $config) = @_;
-
-	my $dbh = Services::DB->connect('db_central');
-	if ($config->{DBI}{database}) {
-		my $db = $config->{DBI}{database};
-		$dbh->do("use $db");
-	}
-	$config->{DBI}{dbh} = $dbh;
-}
-
-sub FastMmap {
-	my ($self, $config) = @_;
-
-	my $file_path = $ENV{'LAN_APPS_ROOT'} . '/etc/cache.conf';
-	my $path      = $ENV{'LAN_VAR_ROOT'} . $config->{FastMmap}{root_dir};
-	$config->{FastMmap}{root_dir} = $path;
-}
-
 sub _build_driver {
 	my ($self) = @_;
-=pod
-	my $method = Util::Parametros::get_parametro(lc($self->namespace), 'CACHE_METHOD')
-		|| Util::Parametros::get_parametro('general', 'CACHE_METHOD');
 
-	# a little sanity check here since it is just a string:
-	my $valid = (any {$method eq $_} @{$self->drivers}) ? 1 : 0;
-	if (!$valid) {
-		log_debug("INVALID CACHE METHOD DEFINED IN lan.parametros: \"$method\" -- defaulting to 'Memory'");
-		$method = 'Memory';
-	}
-	print("Cache::Handler: Returning CHI driver for " . $self->namespace . ". using $method");
-=cut
 	return "Memcached";
 }
 
